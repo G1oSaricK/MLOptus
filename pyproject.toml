@@ -1,0 +1,23 @@
+[project]
+name = "mloptus"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12.8"
+dependencies = [
+    "black>=26.3.1",
+    "ipykernel>=7.2.0",
+    "isort>=8.0.1",
+    "loguru>=0.7.3",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.4",
+    "pandas>=3.0.2",
+    "pre-commit>=4.5.1",
+    "pyarrow>=23.0.1",
+    "pylint>=4.0.5",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.10",
+    "scikit-learn>=1.8.0",
+    "seaborn>=0.13.2",
+]
