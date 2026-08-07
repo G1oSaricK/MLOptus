@@ -47,3 +47,4 @@ terraform.rc
 # planout
 notebooks/.test/*.ipynb
 infra/.terraform.lock.hcl
+feature_store/*
