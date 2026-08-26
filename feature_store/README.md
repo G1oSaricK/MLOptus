@@ -1,29 +1,41 @@
-# Feast Quickstart
-If you haven't already, check out the quickstart guide on Feast's website (http://docs.feast.dev/quickstart), which 
-uses this repo. A quick view of what's in this repository's `feature_repo/` directory:
+# Feature Store Repository
 
-* `data/` contains raw demo parquet data
-* `feature_repo/example_repo.py` contains demo feature definitions
-* `feature_repo/feature_store.yaml` contains a demo setup configuring where data sources are
-* `feature_repo/test_workflow.py` showcases how to run all key Feast commands, including defining, retrieving, and pushing features. 
+## Структура
 
-You can run the overall workflow with `python test_workflow.py`.
+```
+feature_repo/
+├── feature_store.py       — определение признаков
+├── feature_store.yaml     — конфигурация Feast
+└── data/
+    ├── driver_stats.parquet  — сырые данные
+    ├── registry.db           — реестр признаков
+    └── online_store.db       — online store (SQLite)
+```
 
-## To move from this into a more production ready workflow:
-> See more details in [Running Feast in production](https://docs.feast.dev/how-to-guides/running-feast-in-production)
+## Определения признаков
 
-1. First: you should start with a different Feast template, which delegates to a more scalable offline store. 
-   - For example, running `feast init -t gcp`
-   or `feast init -t aws` or `feast init -t snowflake`. 
-   - You can see your options if you run `feast init --help`.
-2. `feature_store.yaml` points to a local file as a registry. You'll want to setup a remote file (e.g. in S3/GCS) or a 
-SQL registry. See [registry docs](https://docs.feast.dev/getting-started/concepts/registry) for more details. 
-3. This example uses a file [offline store](https://docs.feast.dev/getting-started/architecture-and-components/offline-store) 
-   to generate training data. It does not scale. We recommend instead using a data warehouse such as BigQuery, 
-   Snowflake, Redshift. There is experimental support for Spark as well.
-4. Setup CI/CD + dev vs staging vs prod environments to automatically update the registry as you change Feast feature definitions. See [docs](https://docs.feast.dev/how-to-guides/running-feast-in-production#1.-automatically-deploying-changes-to-your-feature-definitions).
-5. (optional) Regularly scheduled materialization to power low latency feature retrieval (e.g. via Airflow). See [Batch data ingestion](https://docs.feast.dev/getting-started/concepts/data-ingestion#batch-data-ingestion)
-for more details.
-6. (optional) Deploy feature server instances with `feast serve` to expose endpoints to retrieve online features.
-   - See [Python feature server](https://docs.feast.dev/reference/feature-servers/python-feature-server) for details.
-   - Use cases can also directly call the Feast client to fetch features as per [Feature retrieval](https://docs.feast.dev/getting-started/concepts/feature-retrieval)
+### Entity
+- **driver** — `driver_id` (INT64)
+
+### Feature Views
+- **driver_efficiency** — `conv_rate` (FLOAT), `acc_rate` (FLOAT)
+- **driver_activity** — `avg_daily_trips` (INT64)
+
+### On-Demand Feature View
+- **driver_performance_metrics** — вычисляемые на лету фичи:
+  - `efficiency_gap` — разница между целевой и текущей конверсией
+  - `performance_score` — взвешенная оценка производительности
+  - `is_high_performer` — бинарный флаг высокоэффективного водителя
+
+### Feature Service
+- **driver_activity_v1** — объединённый набор всех фичей
+
+## Запуск
+
+```bash
+# Регистрация признаков
+feast apply
+
+# Материализация
+feast materialize 2024-01-01T00:00:00 2024-12-31T23:59:59
+```
