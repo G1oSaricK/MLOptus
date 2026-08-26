@@ -1,3 +1,5 @@
 .venv
-venv
-setup.py
+.env
+db.txt
+*.db
+infra/*
